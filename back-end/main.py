@@ -1,9 +1,13 @@
+import os
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from langchain_google_genai.chat_models import ChatGoogleGenerativeAIError
 
 from app.routes import router
+from dotenv import load_dotenv
+
+load_dotenv()
 
 app = FastAPI(
     title="Email Assistant API",
@@ -11,9 +15,13 @@ app = FastAPI(
     description="API for email classification and automatic response generation",
 )
 
+# Parse ALLOWED_ORIGINS from environment variable (comma-separated)
+allowed_origins_str = os.getenv("ALLOWED_ORIGINS", "http://localhost:3000")
+allowed_origins = [origin.strip() for origin in allowed_origins_str.split(",") if origin.strip()]
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000"],
+    allow_origins=allowed_origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
