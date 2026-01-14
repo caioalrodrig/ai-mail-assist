@@ -24,7 +24,7 @@ paths:
   /api/v1/assistant:
     post:
       summary: Process email and generate response
-      description: Process email and return confidence score with suggested response.
+      description: Process email and return classification (productive/unproductive), confidence score with suggested response.
       requestBody:
         required: true
         content:
@@ -35,12 +35,13 @@ paths:
               email_text: "Olá, gostaria de saber o status da minha solicitação."
       responses:
         '200':
-          description: Assistant response with confidence and suggested message
+          description: Assistant response with classification, confidence and suggested message
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/AssistantResponse'
               example:
+                is_productive: true
                 confidence: 0.94
                 suggested_response: "Sua solicitação está em análise. Em breve retornaremos com mais informações."
         '422':
@@ -66,18 +67,28 @@ components:
     AssistantResponse:
       title: AssistantResponse
       required:
+        - is_productive
         - confidence
         - suggested_response
       type: object
       properties:
+        is_productive:
+          title: Is Productive
+          type: boolean
+          description: Whether the email is productive (requires action) or unproductive
+          example: true
         confidence:
           title: Confidence
           type: number
           ge: 0.0
           le: 1.0
+          description: Confidence score of the classification (0.0 to 1.0)
+          example: 0.94
         suggested_response:
           title: Suggested Response
           type: string
+          description: AI-generated suggested response to the email
+          example: "Sua solicitação está em análise. Em breve retornaremos com mais informações."
 
     ValidationError:
       title: ValidationError
