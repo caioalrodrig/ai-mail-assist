@@ -4,8 +4,7 @@ on:
   push:
     branches: [ "master" ]
     paths:
-      - 'back-end/**'
-      - '.github/workflow/cicd.yaml'
+      - '.github/workflows/cicd.yaml'
 
 env:
   DOCKER_IMAGE: ${{ secrets.DOCKERHUB_USERNAME }}/email-assistant
