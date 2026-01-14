@@ -41,5 +41,13 @@ Thumbs.db
 .cache/
 .turbo/
 
+# Python
+venv/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+
 # lock files (keep only one package manager)
 pnpm-lock.yaml

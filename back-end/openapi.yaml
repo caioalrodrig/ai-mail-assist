@@ -1,0 +1,112 @@
+openapi: 3.0.3
+info:
+  title: Email Assistant API
+  version: 1.0.0
+  description: API for email classification and automatic response generation
+
+paths:
+  /health:
+    get:
+      summary: Health Check
+      description: Check if the API is running
+      responses:
+        '200':
+          description: API is healthy
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: "ok"
+
+  /api/v1/assistant:
+    post:
+      summary: Process email and generate response
+      description: Process email and return confidence score with suggested response.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AssistantRequest'
+            example:
+              email_text: "Olá, gostaria de saber o status da minha solicitação."
+      responses:
+        '200':
+          description: Assistant response with confidence and suggested message
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AssistantResponse'
+              example:
+                confidence: 0.94
+                suggested_response: "Sua solicitação está em análise. Em breve retornaremos com mais informações."
+        '422':
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+
+components:
+  schemas:
+    AssistantRequest:
+      title: AssistantRequest
+      required:
+        - email_text
+      type: object
+      properties:
+        email_text:
+          title: Email Text
+          type: string
+          minLength: 1
+
+    AssistantResponse:
+      title: AssistantResponse
+      required:
+        - confidence
+        - suggested_response
+      type: object
+      properties:
+        confidence:
+          title: Confidence
+          type: number
+          ge: 0.0
+          le: 1.0
+        suggested_response:
+          title: Suggested Response
+          type: string
+
+    ValidationError:
+      title: ValidationError
+      required:
+        - loc
+        - msg
+        - type
+      type: object
+      properties:
+        loc:
+          title: Location
+          type: array
+          items:
+            anyOf:
+              - type: string
+              - type: integer
+        msg:
+          title: Message
+          type: string
+        type:
+          title: Error Type
+          type: string
+
+    HTTPValidationError:
+      title: HTTPValidationError
+      type: object
+      properties:
+        detail:
+          title: Detail
+          type: array
+          items:
+            $ref: '#/components/schemas/ValidationError'
