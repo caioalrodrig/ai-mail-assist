@@ -2,8 +2,10 @@ fastapi>=0.115.0
 uvicorn[standard]>=0.32.0
 pydantic>=2.10.0
 langgraph
-langchain-google-genai
+langchain-groq
 python-dotenv
+python-multipart>=0.0.9
+pymupdf>=1.24.0
 
 # testing
 pytest>=8.0.0

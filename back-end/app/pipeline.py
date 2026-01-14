@@ -2,7 +2,7 @@ import os
 from typing import Literal
 
 from dotenv import load_dotenv
-from langchain_google_genai import ChatGoogleGenerativeAI
+from langchain_groq import ChatGroq
 from langgraph.graph import START, END, StateGraph
 from app.schemas.agent import PipelineState, ClassificationOutput
 
@@ -17,29 +17,29 @@ DEFAULT_UNPRODUCTIVE_RESPONSE = (
 
 class EmailAssistantPipeline:
     """Pipeline for email classification and response generation using LangGraph."""
-    
-    def __init__(self, model: str = "gemini-2.5-flash", temperature: float = 0.7):
+
+    def __init__(self, model: str = "llama-3.3-70b-versatile", temperature: float = 0.7):
         """
-        Initialize the pipeline with Google Gemini LLM.
-        
+        Initialize the pipeline with Groq LLM.
+
         Args:
-            model: The Gemini model to use (default: gemini-2.5-flash)
+            model: The Groq model to use (default: llama-3.3-70b-versatile)
             temperature: Temperature for LLM responses (default: 0.7)
         """
-        api_key = os.getenv("GOOGLE_API_KEY") or os.getenv("GEMINI_API_KEY")
-        
+        api_key = os.getenv("GROQ_API_KEY")
+
         if not api_key:
             raise ValueError(
-                "API key required for Gemini Developer API. "
-                "Provide GOOGLE_API_KEY or GEMINI_API_KEY environment variable. "
+                "API key required for Groq API. "
+                "Provide GROQ_API_KEY environment variable."
             )
-        
-        self.llm = ChatGoogleGenerativeAI(
+
+        self.llm = ChatGroq(
             model=model,
             api_key=api_key,
             temperature=temperature,
         )
-        
+
         self.graph = self._build_graph()
     
     def _classify_email(self, state: PipelineState) -> PipelineState:
