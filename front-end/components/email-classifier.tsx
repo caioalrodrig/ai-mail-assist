@@ -9,12 +9,14 @@ import {
   XCircle,
   Mail,
   Sparkles,
+  AlertCircle,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
 import { FileUploadZone } from "@/components/file-upload-zone";
 import { ResultCard } from "@/components/result-card";
+import { classifyEmail, classifyEmailFromPDF } from "@/lib/api";
 
 type ClassificationResult = {
   category: "produtivo" | "improdutivo";
@@ -28,31 +30,45 @@ export function EmailClassifier() {
   const [file, setFile] = useState<File | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
   const [result, setResult] = useState<ClassificationResult | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
   const handleFileSelect = useCallback((selectedFile: File) => {
     setFile(selectedFile);
     setResult(null);
+    setError(null);
   }, []);
 
   const handleProcess = async () => {
     setIsProcessing(true);
     setResult(null);
+    setError(null);
 
-    // Simulate API processing
-    await new Promise((resolve) => setTimeout(resolve, 2000));
+    try {
+      let response;
+      
+      // Process PDF file or text input
+      if (inputMethod === "upload" && file) {
+        response = await classifyEmailFromPDF(file);
+      } else if (inputMethod === "text" && emailText.trim()) {
+        response = await classifyEmail(emailText);
+      } else {
+        throw new Error(
+          inputMethod === "upload" 
+            ? "Por favor, selecione um arquivo PDF" 
+            : "Por favor, insira o texto do email"
+        );
+      }
 
-    // Mock result - TO-DO: call the AI API 
-    const mockResult: ClassificationResult = {
-      category: Math.random() > 0.5 ? "produtivo" : "improdutivo",
-      confidence: 85 + Math.random() * 14,
-      suggestedResponse:
-        Math.random() > 0.5
-          ? "Prezado(a),\n\nAgradecemos seu contato. Sua solicitação foi recebida e será analisada por nossa equipe. Retornaremos em até 48 horas úteis com uma resposta detalhada.\n\nAtenciosamente,\nEquipe de Atendimento"
-          : "Prezado(a),\n\nAgradecemos seu email. Infelizmente, não podemos dar seguimento a esta solicitação no momento, pois ela não se enquadra em nossos critérios de atendimento.\n\nCaso tenha outras dúvidas, estamos à disposição.\n\nAtenciosamente,\nEquipe de Atendimento",
-    };
-
-    setResult(mockResult);
-    setIsProcessing(false);
+      setResult({
+        category: response.is_productive ? "produtivo" : "improdutivo",
+        confidence: response.confidence * 100,
+        suggestedResponse: response.suggested_response,
+      });
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Erro ao processar email");
+    } finally {
+      setIsProcessing(false);
+    }
   };
 
   const canProcess =
@@ -62,6 +78,7 @@ export function EmailClassifier() {
     setFile(null);
     setEmailText("");
     setResult(null);
+    setError(null);
   };
 
   return (
@@ -174,6 +191,19 @@ export function EmailClassifier() {
           )}
         </div>
       </Card>
+
+      {/* Error Message */}
+      {error && (
+        <Card className="p-6 mb-6 border-2 border-destructive bg-destructive/10">
+          <div className="flex items-center gap-3">
+            <AlertCircle className="w-6 h-6 text-destructive" />
+            <div>
+              <p className="font-bold text-destructive">Erro ao processar</p>
+              <p className="text-sm text-muted-foreground">{error}</p>
+            </div>
+          </div>
+        </Card>
+      )}
 
       {/* Step 2: Results */}
       {(result || isProcessing) && (
