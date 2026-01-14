@@ -2,14 +2,15 @@
 
 import { useState, useCallback } from "react";
 import {
-  Upload,
   FileText,
-  Send,
+  WandSparkles,
   CheckCircle,
   XCircle,
   Mail,
   Sparkles,
   AlertCircle,
+  PaperclipIcon,
+  TextIcon,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -84,7 +85,7 @@ export function EmailClassifier() {
   return (
     <div className="max-w-4xl mx-auto px-4 py-8 md:py-12">
       {/* Header */}
-      <header className="text-center mb-10">
+      <header className="flex flex-row flex-wrap items-center justify-center gap-4 mb-10">
         <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-primary/10 mb-4">
           <Mail className="w-8 h-8 text-primary" />
         </div>
@@ -107,17 +108,17 @@ export function EmailClassifier() {
         </p>
 
         {/* Method Toggle */}
-        <div className="flex gap-3 mb-6">
+        <div className="flex flex-row flex-wrap gap-3 mb-6">
           <Button
             variant={inputMethod === "upload" ? "default" : "outline"}
             onClick={() => {
               setInputMethod("upload");
               setResult(null);
             }}
-            className="flex-1 border-2 border-foreground"
+            className="flex-1 border-2 border-foreground cursor-pointer"
           >
-            <Upload className="w-4 h-4 mr-2" />
-            Upload de Arquivo
+            <PaperclipIcon className="w-4 h-4 mr-1" />
+            Subir arquivo
           </Button>
           <Button
             variant={inputMethod === "text" ? "default" : "outline"}
@@ -125,10 +126,10 @@ export function EmailClassifier() {
               setInputMethod("text");
               setResult(null);
             }}
-            className="flex-1 border-2 border-foreground"
+            className="flex-1 border-2 border-foreground cursor-pointer"
           >
-            <FileText className="w-4 h-4 mr-2" />
-            Digitar Texto
+            <TextIcon className="w-4 h-4 mr-1" />
+            Digitar texto
           </Button>
         </div>
 
@@ -164,18 +165,18 @@ export function EmailClassifier() {
           <Button
             onClick={handleProcess}
             disabled={!canProcess || isProcessing}
-            className="flex-1 bg-primary hover:bg-primary/90 text-primary-foreground border-2 border-foreground"
+            className="flex-1 bg-primary hover:bg-primary/90 text-primary-foreground border-2 border-foreground cursor-pointer"
             size="lg"
           >
             {isProcessing ? (
               <>
-                <Sparkles className="w-4 h-4 mr-2 animate-pulse" />
+                <Sparkles className="w-4 h-4 mr-1 animate-pulse" />
                 Processando...
               </>
             ) : (
               <>
-                <Send className="w-4 h-4 mr-2" />
-                Analisar Email
+                <WandSparkles className="w-4 h-4 mr-1" />
+                Analisar email com IA
               </>
             )}
           </Button>
@@ -183,7 +184,7 @@ export function EmailClassifier() {
             <Button
               variant="outline"
               onClick={handleReset}
-              className="border-2 border-foreground bg-transparent"
+              className="border-2 border-foreground bg-transparent cursor-pointer"
               size="lg"
             >
               Limpar

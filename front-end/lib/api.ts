@@ -1,5 +1,8 @@
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
 
+// i wanna debug the NEXT_PUBLIC from .env file
+console.log("NEXT_PUBLIC_API_URL:", process.env.NEXT_PUBLIC_API_URL);
+
 export interface AssistantResponse {
   is_productive: boolean;
   confidence: number;
